@@ -72,7 +72,7 @@ var setGauges = function(gauge_id, string_count_id, change_callback, gauges) {
 // computes string offsets along the nut itself, assuming that width does not include the overhang (it's already accounted for)
 // if "proportional" is not selected, gauges will all be 0 and this will simply return
 // the offsets along the nut. 
-var computeOffsets = function(strings, gauges, actual_length, perp_width, spacingMode, lengthMode) {
+var computeOffsets = function(strings, gauges, actual_length, perp_width, spacingMode) {
     var offsets = [0];
     var corrected_gauges = new Array(strings).fill(0);
     var string_offset = 0;
@@ -89,14 +89,10 @@ var computeOffsets = function(strings, gauges, actual_length, perp_width, spacin
     for (var i=1; i<strings-1; i++) {
         half_adjacent_strings = (corrected_gauges[i-1] + corrected_gauges[i]) / 2.0;
         next_space = perp_gap + half_adjacent_strings; 
-
-        if(lengthMode === 'single') {
-            offsets.push(offsets[i-1] + next_space);
-        } else {
-            offsets.push(offsets[i-1] + next_space * actual_length / perp_width);
-        }
+        offsets.push(offsets[i-1] + next_space * actual_length / perp_width);
     }
-    console.log("offsets:"+offsets);
+
+    return offsets;
 };
 
 // get the user-selected display options for on-screen display and all output options (i.e. SVG, PDF).
@@ -252,8 +248,8 @@ var getGuitar = function() {
       perp_y += move;
     }
 
-    var nutOffsets = computeOffsets(strings, gauges, nut.length(), nutWidth, spacingMode, lengthMode);
-    var bridgeOffsets = computeOffsets(strings, gauges, bridge.length(), bridgeWidth, spacingMode, lengthMode); 
+    var nutOffsets = computeOffsets(strings, gauges, nut.length(), nutWidth, spacingMode);
+    var bridgeOffsets = computeOffsets(strings, gauges, bridge.length(), bridgeWidth, spacingMode); 
     
     var lines = [first];
     for (var i=1; i<=(strings-2); i++)
